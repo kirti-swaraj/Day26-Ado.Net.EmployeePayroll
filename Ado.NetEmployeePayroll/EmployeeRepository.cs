@@ -14,11 +14,7 @@ namespace Ado.NetEmployeePayroll
 
     public class EmployeeRepository
     {
-        //For windows authentication
-        //public static string ConnectionString = "Data Source=ASEEMANAND\SQLEXPRESS;Initial Catalog=payroll_service;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-        //For sql authentication
-        public static string connectionString = @"Server=KIRTISWARAJ\SQLEXPRESS; Initial Catalog =payroll_services; User ID = kirti; Password=1234567890";
-        SqlConnection connection = new SqlConnection(connectionString);
+        public static SqlConnection connection { get; set; }
 
         /// <summary>
         /// UC 2 : Gets all employees details.
@@ -26,6 +22,9 @@ namespace Ado.NetEmployeePayroll
         /// <exception cref="Exception"></exception>
         public void GetAllEmployees()
         {
+           //Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
+            DBConnection dbc = new DBConnection();
+            connection = dbc.GetConnection();
             EmployeeModel model = new EmployeeModel();
             try
             {
@@ -33,7 +32,7 @@ namespace Ado.NetEmployeePayroll
                 {
                     string query = @"select * from dbo.employee_payroll";
                     SqlCommand command = new SqlCommand(query, connection);
-                    this.connection.Open();
+                    connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
                     if (reader.HasRows)
                     {
@@ -68,7 +67,7 @@ namespace Ado.NetEmployeePayroll
             }
             finally
             {
-                this.connection.Close();
+                connection.Close();
             }
         }
 
@@ -82,9 +81,9 @@ namespace Ado.NetEmployeePayroll
         {
             try
             {
-                using (this.connection)
+                using (connection)
                 {
-                    SqlCommand command = new SqlCommand("dbo.SpAddEmployeeDetails", this.connection);
+                    SqlCommand command = new SqlCommand("dbo.SpAddEmployeeDetails", connection);
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@name", model.EmployeeName);
                     command.Parameters.AddWithValue("@start", model.StartDate);
@@ -98,6 +97,44 @@ namespace Ado.NetEmployeePayroll
                     command.Parameters.AddWithValue("@Income_tax", model.Tax);
                     command.Parameters.AddWithValue("@Net_pay", model.NetPay);
                     connection.Open();
+                    var result = command.ExecuteNonQuery();
+                    connection.Close();
+                    if (result != 0)
+                    {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+        /// <summary>
+        /// UC 3 : Updates the given empname with given salary into database.
+        /// </summary>
+        /// <param name="empName">Name of the emp.</param>
+        /// <param name="basicPay">The basic pay.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool UpdateSalaryIntoDatabase(string empName, float basicPay)
+        {
+            DBConnection dbc = new DBConnection();
+            connection = dbc.GetConnection();
+            try
+            {
+                using (connection)
+                {
+                    connection.Open();
+                    string query = @"update dbo.employee_payroll set BasicPay=@p1 where EmpName=@p2";
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@p1", basicPay);
+                    command.Parameters.AddWithValue("@p2", empName);
                     var result = command.ExecuteNonQuery();
                     connection.Close();
                     if (result != 0)
