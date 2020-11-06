@@ -12,12 +12,19 @@ namespace Ado.NetEmployeePayroll
     {
         static void Main(string[] args)
         {
-            //UC 2
-            EmployeeRepository repository1 = new EmployeeRepository();
-            repository1.GetAllEmployees();
+            EmployeeRepository repository = new EmployeeRepository();
+            repository.GetAllEmployees();
 
-            //Adding new employee details
-            EmployeeRepository repository2 = new EmployeeRepository();
+            //UC 3
+            Console.WriteLine(repository.UpdateSalaryIntoDatabase("Teressa", 30000) ? "Update done successfully " : "Update Failed");
+        }
+
+        /// <summary>
+        /// Adds the new employee into the database.
+        /// </summary>
+        public static void AddNewEmployee()
+        {
+            EmployeeRepository repository = new EmployeeRepository();
             EmployeeModel model = new EmployeeModel();
             model.EmployeeName = "shreya";
             model.Address = "Hyderabad";
@@ -31,7 +38,7 @@ namespace Ado.NetEmployeePayroll
             model.StartDate = DateTime.Now;
             model.TaxablePay = 324;
 
-            Console.WriteLine(repository2.AddEmployee(model) ? "Record inserted successfully " : "Failed");
+           Console.WriteLine(repository.AddEmployee(model) ? "Record inserted successfully " : "Failed");
         }
     }
 }
