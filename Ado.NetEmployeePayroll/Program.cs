@@ -14,19 +14,21 @@ namespace Ado.NetEmployeePayroll
         {
             EmployeeRepository repository = new EmployeeRepository();
             //UC 2      
-            repository.GetFullTableDetails();
+            //repository.GetFullTableDetails();
 
             //UC 3
-            Console.WriteLine(repository.UpdateSalaryIntoDatabase("Teressa", 30000) ? "Update done successfully " : "Update Failed");
+            //Console.WriteLine(repository.UpdateSalaryIntoDatabase("Teressa", 30000) ? "Update done successfully " : "Update Failed");
 
             //UC 5
-            repository.GetEmployeesFromForDateRange("2021 - 02 - 01");
+            //repository.GetEmployeesFromForDateRange("2021 - 02 - 01");
 
             //UC 6
-            repository.FindGroupedByGenderData();
+            //repository.FindGroupedByGenderData();
 
             //UC 7
-            repository.InsertIntoMultipleTablesWithTransactions();
+            //repository.InsertIntoMultipleTablesWithTransactions();
+            //UC 8 
+            repository.RetrieveEmployeeDetailsFromMultipleTables();
         }
 
         /// <summary>
