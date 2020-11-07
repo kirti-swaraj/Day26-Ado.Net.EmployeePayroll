@@ -374,5 +374,55 @@ namespace Ado.NetEmployeePayroll
                 }
             }
         }
+        /// <summary>
+        /// UC 8 : Retrieves the employee details from multiple tables after implementing E-R concept.
+        /// </summary>
+        /// <exception cref="System.Exception"></exception>
+        public void RetrieveEmployeeDetailsFromMultipleTables()
+        {
+            DBConnection dbc = new DBConnection();
+            connection = dbc.GetConnection();
+            EmployeeModel model = new EmployeeModel();
+            string query = "select e.EmpId,e.EmpName,e.StartDate,e.Gender,e.PhoneNo,e.Address,p.NetPay,d.DeptName from employee e,payroll p, department d,employee_dept ed where e.EmpId = p.EmpId and ed.EmpId = e.EmpId and ed.DeptId = d.DeptId";
+            try
+            {
+                using (connection)
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            model.EmployeeID = reader.GetInt32(0);
+                            model.EmployeeName = reader.GetString(1);
+                            model.StartDate = reader.GetDateTime(2);
+                            model.Gender = reader.GetString(3);
+                            model.PhoneNumber = reader.GetInt64(4);
+                            model.Address = reader.GetString(5);
+                            model.NetPay = reader.GetDouble(6);
+                            model.Department = reader.GetString(7);
+                            Console.WriteLine($"EmpId:{model.EmployeeID}\nEmpName:{model.EmployeeName}\nStartDate:{model.StartDate}\nGender:{model.Gender}\nPhoneNo:{model.PhoneNumber}\nAddress:{model.Address}\nNetPay:{model.NetPay}\nDepartment:{model.Department}");
+                            Console.WriteLine("\n");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No data found");
+                    }
+                    reader.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                if (connection.State.Equals("Open"))
+                    connection.Close();
+            }
+        }
     }
 }
