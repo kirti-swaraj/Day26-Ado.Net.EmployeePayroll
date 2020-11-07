@@ -17,10 +17,19 @@ namespace Ado.NetEmployeePayroll
         public static SqlConnection connection { get; set; }
 
         /// <summary>
-        /// UC 2 : Gets all employees details.
+        /// UC1-2 : Gets the full details of the table.
+        /// </summary>
+        public void GetFullTableDetails()
+        {
+            string query = @"select * from dbo.employee_payroll";
+            GetAllEmployees(query);
+        }
+
+        /// <summary>
+        /// Gets all employees details based on the query.
         /// </summary>
         /// <exception cref="Exception"></exception>
-        public void GetAllEmployees()
+        public void GetAllEmployees(string query)
         {
            //Creates a new connection for every method to avoid "ConnectionString property not initialized" exception
             DBConnection dbc = new DBConnection();
@@ -30,7 +39,7 @@ namespace Ado.NetEmployeePayroll
             {
                 using (connection)
                 {
-                    string query = @"select * from dbo.employee_payroll";
+                    
                     SqlCommand command = new SqlCommand(query, connection);
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
@@ -182,6 +191,15 @@ namespace Ado.NetEmployeePayroll
             {
                 connection.Close();
             }
+        }
+        /// <summary>
+        /// UC 5 : Gets the employees details for a particular date range.
+        /// </summary>
+        /// <param name="date">The date.</param>
+        public void GetEmployeesFromForDateRange(string date)
+        {
+            string query = $@"select * from dbo.employee_payroll where StartDate between cast('{date}' as date) and cast(getdate() as date)";
+            GetAllEmployees(query);
         }
     }
 }
