@@ -122,7 +122,7 @@ namespace Ado.NetEmployeePayroll
         /// <param name="basicPay">The basic pay.</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public bool UpdateSalaryIntoDatabase(string empName, float basicPay)
+        public bool UpdateSalaryIntoDatabase(string empName, double basicPay)
         {
             DBConnection dbc = new DBConnection();
             connection = dbc.GetConnection();
@@ -142,6 +142,36 @@ namespace Ado.NetEmployeePayroll
                         return true;
                     }
                     return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+        /// <summary>
+        /// UC 4 : Reads the updated salary from database.
+        /// </summary>
+        /// <param name="empName">Name of the emp.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception"></exception>
+        public double ReadUpdatedSalaryFromDatabase(string empName)
+        {
+            DBConnection dbc = new DBConnection();
+            connection = dbc.GetConnection();
+            try
+            {
+                using (connection)
+                {
+                    string query = @"select BasicPay from dbo.employee_payroll where EmpName=@p";
+                    SqlCommand command = new SqlCommand(query, connection);
+                    connection.Open();
+                    command.Parameters.AddWithValue("@p", empName);
+                    return (Double)command.ExecuteScalar();
                 }
             }
             catch (Exception ex)
