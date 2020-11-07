@@ -142,7 +142,8 @@ namespace Ado.NetEmployeePayroll
                 using (connection)
                 {
                     connection.Open();
-                    string query = @"update dbo.employee_payroll set BasicPay=@p1 where EmpName=@p2";
+                    //string query = @"update dbo.employee_payroll set BasicPay=@p1 where EmpName=@p2";
+                    string query = @"update dbo.payroll set BasicPay=@p1 from payroll p,employee e where e.EmpName=@p2 and e.EmpId=p.EmpId";
                     SqlCommand command = new SqlCommand(query, connection);
                     command.Parameters.AddWithValue("@p1", basicPay);
                     command.Parameters.AddWithValue("@p2", empName);
@@ -179,7 +180,8 @@ namespace Ado.NetEmployeePayroll
             {
                 using (connection)
                 {
-                    string query = @"select BasicPay from dbo.employee_payroll where EmpName=@p";
+                    string query = @"select p.BasicPay from payroll p,employee e where p.EmpId=e.EmpId and e.EmpName=@p";
+                    //string query = @"select BasicPay from dbo.employee_payroll where EmpName=@p";
                     SqlCommand command = new SqlCommand(query, connection);
                     connection.Open();
                     command.Parameters.AddWithValue("@p", empName);
@@ -217,7 +219,8 @@ namespace Ado.NetEmployeePayroll
             {
                 using (connection)
                 {
-                    string query = @"select Gender,count(BasicPay) as EmpCount,min(BasicPay) as MinSalary,max(BasicPay) as MaxSalary,sum(BasicPay) as SalarySum,avg(BasicPay) as AvgSalary from dbo.employee_payroll where Gender='M' or Gender='F' group by Gender";
+                    string query = "select e.Gender,count(e.EmpId) as EmpCount,min(p.NetPay) as MinSalary,max(p.NetPay) as MaxSalary,sum(p.NetPay) as SalarySum,avg(p.NetPay) as AvgSalary from employee e,payroll p where e.EmpId = p.EmpId group by Gender";
+                    //string query = @"select Gender,count(BasicPay) as EmpCount,min(BasicPay) as MinSalary,max(BasicPay) as MaxSalary,sum(BasicPay) as SalarySum,avg(BasicPay) as AvgSalary from dbo.employee_payroll where Gender='M' or Gender='F' group by Gender";
                     SqlCommand command = new SqlCommand(query, connection);
                     connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
